@@ -1,0 +1,133 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Generar el esqueleto de Android con Capacitor
+        run: npx cap add android
+
+      - name: Inyectar el código Kotlin y los recursos XML propios
+        run: |
+          rm -f android/app/src/main/java/com/dany/macroautomator/MainActivity.java
+          cp -rf android-overlay/app/src/main/java/. android/app/src/main/java/
+          mkdir -p android/app/src/main/res/xml
+          cp -rf android-overlay/app/src/main/res/xml/. android/app/src/main/res/xml/
+
+      - name: Personalizar el AndroidManifest y strings.xml generados (sin reemplazarlos)
+        run: |
+          python3 - << 'PYEOF'
+          import re
+
+          # ---- AndroidManifest.xml ----
+          path = "android/app/src/main/AndroidManifest.xml"
+          with open(path) as f:
+              content = f.read()
+
+          perms = [
+              "android.permission.RECEIVE_BOOT_COMPLETED",
+              "android.permission.SCHEDULE_EXACT_ALARM",
+              "android.permission.USE_EXACT_ALARM",
+              "android.permission.FOREGROUND_SERVICE",
+              "android.permission.POST_NOTIFICATIONS",
+          ]
+          perm_lines = ""
+          for p in perms:
+              if p not in content:
+                  perm_lines += '    <uses-permission android:name="%s" />\n' % p
+          if perm_lines:
+              content = re.sub(r"(<manifest[^>]*>\n)", r"\1" + perm_lines, content, count=1)
+
+          if 'android:name=".MacroApp"' not in content:
+              content = content.replace("<application", '<application\n        android:name=".MacroApp"', 1)
+
+          if ".MacroAccessibilityService" not in content:
+              extra = """
+              <service
+                  android:name=".MacroAccessibilityService"
+                  android:label="Macro Automator"
+                  android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+                  android:exported="true">
+                  <intent-filter>
+                      <action android:name="android.accessibilityservice.AccessibilityService" />
+                  </intent-filter>
+                  <meta-data
+                      android:name="android.accessibilityservice"
+                      android:resource="@xml/accessibility_service_config" />
+              </service>
+
+              <receiver
+                  android:name=".MacroAlarmReceiver"
+                  android:exported="false" />
+              """
+              content = content.replace("</application>", extra + "</application>")
+
+          with open(path, "w") as f:
+              f.write(content)
+
+          # ---- strings.xml (se agregan strings nuevos sin borrar los que ya vienen) ----
+          path = "android/app/src/main/res/values/strings.xml"
+          with open(path) as f:
+              content = f.read()
+
+          new_strings = {
+              "app_name": "Macro Automator",
+              "accessibility_service_description": "Permite grabar y reproducir toques y textos para automatizar acciones que tú mismo defines.",
+          }
+          additions = ""
+          for name, value in new_strings.items():
+              tag = 'name="%s"' % name
+              if tag not in content:
+                  additions += '    <string name="%s">%s</string>\n' % (name, value)
+          if additions:
+              content = content.replace("</resources>", additions + "</resources>")
+
+          with open(path, "w") as f:
+              f.write(content)
+          PYEOF
+
+      - name: Mostrar el AndroidManifest final (solo para revisar)
+        run: |
+          echo "===== AndroidManifest.xml final ====="
+          cat android/app/src/main/AndroidManifest.xml
+          echo "===== strings.xml final ====="
+          cat android/app/src/main/res/values/strings.xml
+
+      - name: Sincronizar el proyecto web
+        run: npx cap sync android
+
+      - name: Instalar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Dar permisos de ejecución a gradlew
+        run: chmod +x android/gradlew
+
+      - name: Compilar APK (debug)
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Subir el APK como resultado descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: macro-automator-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk

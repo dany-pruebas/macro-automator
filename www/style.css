@@ -1,0 +1,101 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, Roboto, Arial, sans-serif;
+  background: #0f1115;
+  color: #eaeaea;
+  padding-bottom: 40px;
+}
+header {
+  padding: 20px 16px 10px;
+  background: #161a22;
+  border-bottom: 1px solid #262b36;
+}
+h1 { margin: 0 0 6px; font-size: 20px; }
+.status {
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #2a2116;
+  color: #e0b352;
+  display: inline-block;
+}
+.status.ok { background: #16281c; color: #4fd07a; }
+
+main { padding: 16px; max-width: 480px; margin: 0 auto; }
+
+.card {
+  background: #171b24;
+  border: 1px solid #262b36;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.card h2 { margin-top: 0; font-size: 16px; }
+.card p { font-size: 13px; color: #a7adba; }
+
+.row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+  cursor: pointer;
+}
+.btn.primary { background: #3d7bff; color: white; }
+.btn.secondary { background: #262b36; color: #eaeaea; }
+.btn.record { background: #e0453c; color: white; }
+.btn.stop { background: #262b36; color: #eaeaea; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+input[type="text"], input[type="time"] {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #262b36;
+  background: #0f1115;
+  color: #eaeaea;
+}
+
+.steps, .saved { list-style: none; padding: 0; margin: 10px 0 0; }
+.steps li, .saved li {
+  background: #0f1115;
+  border: 1px solid #262b36;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.saved li .actions { display: flex; gap: 6px; }
+.saved li button {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  background: #262b36;
+  color: #eaeaea;
+}
+
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal.hidden { display: none; }
+.modal-content {
+  background: #171b24;
+  border-radius: 14px;
+  padding: 20px;
+  width: 85%;
+  max-width: 360px;
+}
+.modal-content label { display: block; margin-top: 12px; font-size: 13px; color: #a7adba; }
+.days { display: flex; gap: 6px; margin-top: 6px; }
+.days label { display: flex; flex-direction: column; align-items: center; font-size: 11px; }

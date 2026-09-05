@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Macro Automator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Macro Automator</h1>
+    <div id="accStatus" class="status">Verificando permiso de accesibilidad...</div>
+  </header>
+
+  <main>
+
+    <section class="card">
+      <h2>1. Permiso del sistema</h2>
+      <p>El servicio de accesibilidad es lo que le permite a la app "ver" la pantalla y tocar botones por ti.</p>
+      <button id="btnOpenAccessibility" class="btn primary">Activar accesibilidad</button>
+    </section>
+
+    <section class="card">
+      <h2>2. Grabar una secuencia</h2>
+      <p>Presiona grabar, luego ve a WhatsApp y haz normalmente los pasos (abrir chat, escribir, enviar). Cada toque y cada texto se va guardando.</p>
+      <div class="row">
+        <button id="btnRecord" class="btn record">● Grabar</button>
+        <button id="btnStop" class="btn stop" disabled>■ Detener</button>
+      </div>
+      <ul id="stepsList" class="steps"></ul>
+      <div class="row">
+        <input id="seqName" type="text" placeholder="Nombre de la secuencia (ej: Enviar recordatorio)">
+        <button id="btnSave" class="btn secondary">Guardar</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. Secuencias guardadas</h2>
+      <ul id="savedList" class="saved"></ul>
+    </section>
+
+  </main>
+
+  <!-- Modal para programar una secuencia -->
+  <div id="scheduleModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Programar envío</h3>
+      <label>Hora</label>
+      <input id="schedTime" type="time">
+      <label>Repetir en días</label>
+      <div class="days" id="schedDays">
+        <label><input type="checkbox" value="1"> D</label>
+        <label><input type="checkbox" value="2"> L</label>
+        <label><input type="checkbox" value="3"> M</label>
+        <label><input type="checkbox" value="4"> X</label>
+        <label><input type="checkbox" value="5"> J</label>
+        <label><input type="checkbox" value="6"> V</label>
+        <label><input type="checkbox" value="7"> S</label>
+      </div>
+      <div class="row">
+        <button id="btnConfirmSchedule" class="btn primary">Programar</button>
+        <button id="btnCancelSchedule" class="btn secondary">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="capacitor.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

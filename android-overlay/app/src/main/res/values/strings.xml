@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Macro Automator</string>
+    <string name="accessibility_service_description">Permite grabar y reproducir toques y textos para automatizar acciones que tú mismo defines.</string>
+</resources>

@@ -1,0 +1,9 @@
+{
+  "appId": "com.dany.macroautomator",
+  "appName": "Macro Automator",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true
+  }
+}
